@@ -7,7 +7,7 @@ This script allowes you to use ESX-Ressources in QB-Framework
 3. Make sure to Start this script before your ESX-Script and after qb-core.
 4. Run your ESX-Script
 
-ää example header of file
+## example header of file
     ESX = nil
       while ESX == nil do
         if GetResourceState('es_extended') == 'started' then
