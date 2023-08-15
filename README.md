@@ -15,3 +15,8 @@ IF you have any errors with this script make an issue or concat me directly on D
 
 ## Others
 Enjoy! :)
+
+##Version
+Current is the Version 1.0.0.
+
+See here The Updates if there are any..
