@@ -313,6 +313,9 @@ function QBCore_Server_PlayerLoaded(xPlayer)
     end)
 
     xPlayer.Functions.AddField("getAccount", function(account)
+        if account == "money" then
+            account = "cash"
+        end
         return {money = xPlayer.Functions.GetMoney(account)}
     end)
 
