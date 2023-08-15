@@ -7,6 +7,20 @@ This script allowes you to use ESX-Ressources in QB-Framework
 3. Make sure to Start this script before your ESX-Script and after qb-core.
 4. Run your ESX-Script
 
+ää example header of file
+    ESX = nil
+      while ESX == nil do
+        if GetResourceState('es_extended') == 'started' then
+          ESX = exports["es_extended"]:getSharedObject()
+        elseif GetResourceState('qb-core') == 'started' and GetResourceState('da_qbwrapper') == 'started' then 
+          ESX = exports["da_qbwrapper"]:getSharedObject()    
+        else
+          print('^1[ERROR] You have not started ESX or QB-Core in combination with da_qbwrapper. Make sure to start the scripts before this one! ^7')
+          break
+      end
+    end 
+
+
 ## Database users => players
 IF your script uses the users table of ESX make sure that you replace it with the players table of QB, this won't get replaced!
 
