@@ -120,11 +120,11 @@ QBCore.SetPlayerFunctionOverride = function(index)
 end 
 
 QBCore.GetItemLabel = function(item)
-    return QBCore.Shared.items[item].label or ""
+    return QBCore.Shared.Items[item].label or ""
 end 
 
 QBCore.GetJobs = function()
-    return QBCore.Shared.jobs
+    return QBCore.Shared.Jobs
 end 
 
 QBCore.GetUsableItems = function()
