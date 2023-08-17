@@ -6,6 +6,12 @@ QBCore = exports['qb-core']:GetCoreObject()
 exports('getSharedObject', function()
     return QBCore
 end)
+exports('isESX', function()
+    return GetResourceState('es_extended') == 'started'
+end)
+exports('isQB', function()
+    return GetResourceState('qb-core') == 'started'
+end)
 
 
 QBCore.RegisterCommand = function(name, group, cb, allowConsole, suggestion)
@@ -65,9 +71,295 @@ QBCore.GetExtendedPlayers = function(key, val)
 end 
 
 QBCore.GetPlayerFromId = function(source)
+    local _source = source
+    local xPlayer = QBCore.Functions.GetPlayer(_source)
+    xPlayer.identifier = xPlayer.PlayerData.citizenid
+    
+    xPlayer.setCoords = function()
+        if PlayerDebug then 
+            print("No QB-Core Native equivalent xPlayer.setCoords function from ESX.. Self builded function here..")
+        end 
+        local Ped = GetPlayerPed(_source)
+        local vector = type(coords) == "vector4" and coords or type(coords) == "vector3" and vector4(coords, 0.0) or
+        vec(coords.x, coords.y, coords.z, coords.heading or 0.0)
+        SetEntityCoords(Ped, vector.xyz, false, false, false, false)
+        SetEntityHeading(Ped, vector.w)
+    end
+    xPlayer.updateCoords = function(coords)
+        if PlayerDebug then 
+            print("QB-Core has no equivalent xPlayer.updateCoords function from ESX")
+        end
+    end
 
 
-    return QBCore.Functions.GetPlayer(source)
+    xPlayer.getCoords = function(coords)
+        
+        if PlayerDebug then 
+            print("QB-Core has no equivalent xPlayer.getCoords function from ESX")
+        end
+
+        return "Hello!!"
+        
+    end
+
+    xPlayer.kick = function(reason)
+        QBCore.Functions.Kick(_source, reason, nil, nil)
+    end
+
+    xPlayer.setMoney = function(amount)
+        xPlayer.Functions.SetMoney('cash', amount, nil)
+    end
+
+    xPlayer.getMoney = function()
+        return xPlayer.Functions.GetMoney('cash')
+    end
+
+    xPlayer.addMoney = function(amount, reason)
+        xPlayer.Functions.AddMoney('cash', amount, reason)
+    end
+
+    xPlayer.removeMoney = function(amount, reason)
+        xPlayer.Functions.RemoveMoney('cash', amount, reason)
+    end
+
+    xPlayer.getIdentifier = function()
+        return xPlayer.identifier
+    end
+
+    xPlayer.getIdentifier = function()
+        return xPlayer.identifier
+    end
+    
+    xPlayer.getIdentifier = function()
+        return xPlayer.identifier
+    end
+
+
+    xPlayer.setGroup = function(newGroup)
+        if PlayerDebug then 
+            print("QB-Core has no equivalent xPlayer.setGroup function from ESX")
+        end 
+    end
+
+    xPlayer.getGroup = function()
+        return QBCore.Functions.GetPermission()
+    end
+
+    xPlayer.set = function(k, v)
+        xPlayer.Functions.AddField(k, v)
+    end
+
+    xPlayer.get = function(k)
+        return xPlayer[k]
+    end
+
+    xPlayer.getAccounts = function(minimal)
+        local retval = {}
+        for k, v in pairs(xPlayer.PlayerData.money) do
+            retval[k] = {money = xPlayer.Functions.GetMoney(k) or 0}
+        end
+
+        return retval
+    end
+
+    xPlayer.getAccount = function(account)
+        if account == "money" then
+            account = "cash"
+        end
+        return {money = xPlayer.Functions.GetMoney(account)}
+    end
+
+    xPlayer.getInventory = function(minimal)
+        return xPlayer.PlayerData.items
+    end
+
+    xPlayer.getJob = function()
+
+        local retval = {
+            name = xPlayer.PlayerData.job.name,
+            label = xPlayer.PlayerData.job.label,
+            grade = xPlayer.PlayerData.job.grade.level,
+            grade_name = xPlayer.PlayerData.job.grade.name,
+            grade_salary = xPlayer.PlayerData.job.payment,
+            isboss = xPlayer.PlayerData.job.isboss
+        }
+
+        return retval
+    end
+
+    xPlayer.getLoadout = function()
+        if PlayerDebug then 
+            print("QB-Core has no Native equivalent xPlayer.getLoadout function from ESX")
+        end 
+        return {}
+    end
+
+    xPlayer.getName = function()
+        return xPlayer.PlayerData.name
+    end
+
+    xPlayer.setName = function(newName)
+        if PlayerDebug then 
+            print("QB-Core has no Native equivalent xPlayer.setName function from ESX")
+        end
+    end
+
+    xPlayer.setAccountMoney = function(accountName, money, reason)
+        if accountName == 'money' then
+            accountName = 'cash'
+        end
+        xPlayer.Functions.SetMoney(accountName, money, reason)
+    end
+
+    xPlayer.addAccountMoney = function(accountName, money, reason)
+        if accountName == 'money' then
+            accountName = 'cash'
+        end
+        xPlayer.Functions.AddMoney(accountName, money, reason)
+    end
+
+    xPlayer.removeAccountMoney = function(accountName, money, reason)
+        if accountName == 'money' then
+            accountName = 'cash'
+        end
+        xPlayer.Functions.RemoveMoney(accountName, money, reason)
+    end
+
+    xPlayer.getInventoryItem = function(name, metadata)
+        local gi = xPlayer.Functions.GetItemByName(name) or {count = 0}
+        gi.count = gi.amount or 0
+        return gi
+    end
+
+    xPlayer.addInventoryItem = function(name, count, metadata, slot)
+        xPlayer.Functions.AddItem(name, count, slot or false)
+    end
+
+    xPlayer.removeInventoryItem = function(name, count, metadata, slot)
+        xPlayer.Functions.RemoveItem(name, count, slot or false)
+    end
+
+    xPlayer.setInventoryItem = function(name, count, metadata, slot)
+        xPlayer.Functions.AddItem(name, count, slot or false)
+    end
+
+    xPlayer.getWeight = function()
+        return xPlayer.Player.GetTotalWeight
+    end
+
+    xPlayer.getMaxWeight = function()
+        if PlayerDebug then 
+            print("QB-Core has no Native equivalent xPlayer.getMaxWeight function from ESX.. return 1000000")
+        end 
+        return 1000000
+    end
+
+    xPlayer.canCarryItem = function()
+        if PlayerDebug then 
+            print("QB-Core has no Native equivalent xPlayer.canCarryItem function from ESX.. AddItem checks it!")
+        end
+        return true
+    end
+    
+    xPlayer.canSwapItem = function()
+        if PlayerDebug then 
+            print("QB-Core has no Native equivalent xPlayer.canSwapItem function from ESX.. AddItem checks it!")
+        end
+        return true
+    end
+
+    xPlayer.setMaxWeight = function()
+        if PlayerDebug then 
+            print("QB-Core has no Native equivalent xPlayer.setMaxWeight function from ESX.. AddItem checks it!")
+        end
+        return true
+    end
+
+    xPlayer.setJob = function(job, grade)
+        xPlayer.Functions.SetJob(job, grade)
+    end
+
+    xPlayer.addWeapon = function(weaponName, ammo)
+        xPlayer.Functions.AddItem(weaponName, 1, false)
+
+        if QBCore.Shared[weaponName] and QBCore.Shared.Weapons[weaponName].ammotype then 
+            xPlayer.Functions.AddItem(QBCore.Shared.Weapons[weaponName].ammotype, ammo, false)
+        end 
+    end
+
+    xPlayer.addWeaponComponent = function(weaponName, weaponComponent)
+        xPlayer.Functions.AddItem(weaponComponent, 1, false)
+    end
+
+    xPlayer.addWeaponAmmo = function(weaponName, ammoCount)
+        if QBCore.Shared[weaponName] and QBCore.Shared.Weapons[weaponName].ammotype then 
+            xPlayer.Functions.AddItem(QBCore.Shared.Weapons[weaponName].ammotype, ammoCount, false)
+        end 
+    end
+
+    xPlayer.updateWeaponAmmo = function(weaponName, ammoCount)
+        if PlayerDebug then 
+            print("QB-Core has no Native equivalent xPlayer.updateWeaponAmmo function from ESX.")
+        end
+    end
+
+    xPlayer.setWeaponTint = function(weaponName, weaponTintIndex)
+        if PlayerDebug then 
+            print("QB-Core has no Native equivalent xPlayer.setWeaponTint function from ESX. (qb-weapons handles it)")
+        end
+    end
+
+    xPlayer.getWeaponTint = function(weaponName)
+        if PlayerDebug then 
+            print("QB-Core has no Native equivalent xPlayer.setWeaponTint function from ESX. (qb-weapons handles it)")
+        end
+    end
+
+    xPlayer.removeWeapon = function(weaponName)
+        xPlayer.Functions.RemoveItem(weaponName, 1, false)
+    end
+
+    xPlayer.removeWeaponComponent = function(weaponName, weaponComponent)
+        xPlayer.Functions.RemoveItem(weaponComponent, 1, false)
+    end
+
+    xPlayer.removeWeaponAmmo = function(weaponName, ammoCount)
+        if QBCore.Shared[weaponName] and QBCore.Shared.Weapons[weaponName].ammotype then 
+            xPlayer.Functions.RemoveItem(QBCore.Shared.Weapons[weaponName].ammotype, ammoCount, false)
+        end 
+    end
+
+    xPlayer.removeWeaponAmmo = function(weaponName, weaponComponent)
+        QBCore.Functions.HasItem(_source, weaponComponent, 1)
+    end
+
+    xPlayer.removeWeaponAmmo = function(weaponName)
+        QBCore.Functions.HasItem(_source, weaponName, 1)
+    end
+
+    xPlayer.hasItem = function(item, metadata)
+        QBCore.Functions.HasItem(_source, item, 1)
+    end
+
+    xPlayer.getWeapon = function(weaponName)
+        if PlayerDebug then 
+            print("QB-Core has no Native equivalent xPlayer.getWeapon function from ESX.")
+        end
+        return nil
+    end
+
+    xPlayer.showNotification = function(msg)
+        QBCore.Functions.Notify(_source, msg)
+    end
+
+    xPlayer.showHelpNotification = function(msg, thisFrame, beep, duration)
+        QBCore.Functions.Notify(_source, msg)
+    end
+
+    xPlayer.triggerEvent = function(eventName, ...)
+        TriggerClientEvent(eventName, _source, ...)
+    end
+    return xPlayer
 end 
 
 QBCore.GetPlayerFromIdentifier = function(identifier)
@@ -75,7 +367,7 @@ QBCore.GetPlayerFromIdentifier = function(identifier)
 end 
 
 QBCore.GetIdentifier = function(playerId)
-    return QBCore.Functions.GetPlayer(source).PlayerData.citizenid
+    return QBCore.Functions.GetPlayer(playerId).PlayerData.citizenid
 end 
 
 QBCore.GetVehicleType = function(Vehicle, Player, cb)
@@ -221,284 +513,41 @@ AddEventHandler('onResourceStart', function(resourceName)
     if (GetCurrentResourceName() ~= resourceName) then
       return
     end
-    local Players = QBCore.GetPlayers()
+    --local Players = QBCore.GetPlayers()
 
-    for k, v in pairs(Players) do
-        local xPlayer = QBCore.GetPlayerFromId(v)
-        QBCore_Server_PlayerLoaded(xPlayer)
-    end
+    --for k, v in pairs(Players) do
+        --local xPlayer = QBCore.GetPlayerFromId(v)
+        --QBCore_Server_PlayerLoaded(xPlayer)
+   -- end
 end)
 
 
 AddEventHandler('QBCore:Server:PlayerLoaded', function(xPlayer)
-    QBCore_Server_PlayerLoaded(xPlayer)
+    --QBCore_Server_PlayerLoaded(xPlayer)
 end)
 
-function QBCore_Server_PlayerLoaded(xPlayer)
-    local _source = xPlayer.PlayerData.source
-    xPlayer.Functions.AddField("identifier", xPlayer.PlayerData.citizenid)
-    xPlayer.Functions.AddField("job", xPlayer.PlayerData.job)
-    xPlayer.Functions.AddField("setCoords", function()
-        if PlayerDebug then 
-            print("No QB-Core Native equivalent xPlayer.setCoords function from ESX.. Self builded function here..")
-        end 
-        local Ped = GetPlayerPed(_source)
-        local vector = type(coords) == "vector4" and coords or type(coords) == "vector3" and vector4(coords, 0.0) or
-        vec(coords.x, coords.y, coords.z, coords.heading or 0.0)
-        SetEntityCoords(Ped, vector.xyz, false, false, false, false)
-        SetEntityHeading(Ped, vector.w)
-    end)
-    xPlayer.Functions.AddField("updateCoords", function(coords)
-        if PlayerDebug then 
-            print("QB-Core has no equivalent xPlayer.updateCoords function from ESX")
+
+
+
+function print_r(arr, indentLevel)
+    local str = ""
+    local indentStr = "#"
+
+    if(indentLevel == nil) then
+        print(print_r(arr, 0))
+        return
+    end
+
+    for i = 0, indentLevel do
+        indentStr = indentStr.."\t"
+    end
+
+    for index,value in pairs(arr) do
+        if type(value) == "table" then
+            str = str..indentStr..index..": \n"..print_r(value, (indentLevel + 1))
+        else 
+            str = str..indentStr..index..": "..value.."\n"
         end
-    end)
-
-
-    xPlayer.Functions.AddField("getCoords", function(coords)
-        if PlayerDebug then 
-            print("QB-Core has no equivalent xPlayer.getCoords function from ESX")
-        end
-    end)
-
-    xPlayer.Functions.AddField("kick", function(reason)
-        QBCore.Functions.Kick(_source, reason, nil, nil)
-    end)
-
-    xPlayer.Functions.AddField("setMoney", function(amount)
-        xPlayer.Functions.SetMoney('cash', amount, nil)
-    end)
-
-    xPlayer.Functions.AddField("getMoney", function()
-        return xPlayer.Functions.GetMoney('cash')
-    end)
-
-    xPlayer.Functions.AddField("addMoney", function(amount, reason)
-        xPlayer.Functions.AddMoney('cash', amount, reason)
-    end)
-
-    xPlayer.Functions.AddField("removeMoney", function(amount, reason)
-        xPlayer.Functions.RemoveMoney('cash', amount, reason)
-    end)
-
-    xPlayer.Functions.AddField("getIdentifier", function()
-        return xPlayer.identifier
-    end)
-
-    xPlayer.Functions.AddField("setGroup", function(newGroup)
-        if PlayerDebug then 
-            print("QB-Core has no equivalent xPlayer.setGroup function from ESX")
-        end 
-    end)
-
-    xPlayer.Functions.AddField("getGroup", function()
-        return QBCore.Functions.GetPermission()
-    end)
-
-    xPlayer.Functions.AddField("set", function(k, v)
-        xPlayer.Functions.AddField(k, v)
-    end)
-
-    xPlayer.Functions.AddField("get", function(k)
-        return xPlayer[k]
-    end)
-
-    xPlayer.Functions.AddField("getAccounts", function(minimal)
-        local retval = {}
-        for k, v in pairs(xPlayer.PlayerData.money) do
-            retval[k] = {money = xPlayer.Functions.GetMoney(k) or 0}
-        end
-
-        return retval
-    end)
-
-    xPlayer.Functions.AddField("getAccount", function(account)
-        if account == "money" then
-            account = "cash"
-        end
-        return {money = xPlayer.Functions.GetMoney(account)}
-    end)
-
-    xPlayer.Functions.AddField("getInventory", function(minimal)
-        return xPlayer.PlayerData.items
-    end)
-
-    xPlayer.Functions.AddField("getJob", function()
-        return xPlayer.PlayerData.job
-    end)
-
-    xPlayer.Functions.AddField("getLoadout", function()
-        if PlayerDebug then 
-            print("QB-Core has no Native equivalent xPlayer.getLoadout function from ESX")
-        end 
-        return {}
-    end)
-
-    xPlayer.Functions.AddField("getName", function()
-        return xPlayer.PlayerData.name
-    end)
-
-    xPlayer.Functions.AddField("setName", function(newName)
-        if PlayerDebug then 
-            print("QB-Core has no Native equivalent xPlayer.setName function from ESX")
-        end
-    end)
-
-    xPlayer.Functions.AddField("setAccountMoney", function(accountName, money, reason)
-        if accountName == 'money' then
-            accountName = 'cash'
-        end
-        xPlayer.Functions.SetMoney(accountName, money, reason)
-    end)
-
-    xPlayer.Functions.AddField("addAccountMoney", function(accountName, money, reason)
-        if accountName == 'money' then
-            accountName = 'cash'
-        end
-        xPlayer.Functions.AddMoney(accountName, money, reason)
-    end)
-
-    xPlayer.Functions.AddField("removeAccountMoney", function(accountName, money, reason)
-        if accountName == 'money' then
-            accountName = 'cash'
-        end
-        xPlayer.Functions.RemoveMoney(accountName, money, reason)
-    end)
-
-    xPlayer.Functions.AddField("getInventoryItem", function(name, metadata)
-        local gi = xPlayer.Functions.GetItemByName(name) or {count = 0}
-        gi.count = gi.amount or 0
-        return gi
-    end)
-
-    xPlayer.Functions.AddField("addInventoryItem", function(name, count, metadata, slot)
-        xPlayer.Functions.AddItem(name, count, slot or false)
-    end)
-
-    xPlayer.Functions.AddField("removeInventoryItem", function(name, count, metadata, slot)
-        xPlayer.Functions.RemoveItem(name, count, slot or false)
-    end)
-
-    xPlayer.Functions.AddField("setInventoryItem", function(name, count, metadata, slot)
-        xPlayer.Functions.AddItem(name, count, slot or false)
-    end)
-
-    xPlayer.Functions.AddField("getWeight", function()
-        return xPlayer.Player.GetTotalWeight
-    end)
-
-    xPlayer.Functions.AddField("getMaxWeight", function()
-        if PlayerDebug then 
-            print("QB-Core has no Native equivalent xPlayer.getMaxWeight function from ESX.. return 1000000")
-        end 
-        return 1000000
-    end)
-
-    xPlayer.Functions.AddField("canCarryItem", function()
-        if PlayerDebug then 
-            print("QB-Core has no Native equivalent xPlayer.canCarryItem function from ESX.. AddItem checks it!")
-        end
-        return true
-    end)
-    
-    xPlayer.Functions.AddField("canSwapItem", function()
-        if PlayerDebug then 
-            print("QB-Core has no Native equivalent xPlayer.canSwapItem function from ESX.. AddItem checks it!")
-        end
-        return true
-    end)
-
-    xPlayer.Functions.AddField("setMaxWeight", function()
-        if PlayerDebug then 
-            print("QB-Core has no Native equivalent xPlayer.setMaxWeight function from ESX.. AddItem checks it!")
-        end
-        return true
-    end)
-
-    xPlayer.Functions.AddField("setJob", function(job, grade)
-        xPlayer.Functions.SetJob(job, grade)
-    end)
-
-    xPlayer.Functions.AddField("addWeapon", function(weaponName, ammo)
-        xPlayer.Functions.AddItem(weaponName, 1, false)
-
-        if QBCore.Shared[weaponName] and QBCore.Shared.Weapons[weaponName].ammotype then 
-            xPlayer.Functions.AddItem(QBCore.Shared.Weapons[weaponName].ammotype, ammo, false)
-        end 
-    end)
-
-    xPlayer.Functions.AddField("addWeaponComponent", function(weaponName, weaponComponent)
-        xPlayer.Functions.AddItem(weaponComponent, 1, false)
-    end)
-
-    xPlayer.Functions.AddField("addWeaponAmmo", function(weaponName, ammoCount)
-        if QBCore.Shared[weaponName] and QBCore.Shared.Weapons[weaponName].ammotype then 
-            xPlayer.Functions.AddItem(QBCore.Shared.Weapons[weaponName].ammotype, ammoCount, false)
-        end 
-    end)
-
-    xPlayer.Functions.AddField("updateWeaponAmmo", function(weaponName, ammoCount)
-        if PlayerDebug then 
-            print("QB-Core has no Native equivalent xPlayer.updateWeaponAmmo function from ESX.")
-        end
-    end)
-
-    xPlayer.Functions.AddField("setWeaponTint", function(weaponName, weaponTintIndex)
-        if PlayerDebug then 
-            print("QB-Core has no Native equivalent xPlayer.setWeaponTint function from ESX. (qb-weapons handles it)")
-        end
-    end)
-
-    xPlayer.Functions.AddField("getWeaponTint", function(weaponName)
-        if PlayerDebug then 
-            print("QB-Core has no Native equivalent xPlayer.setWeaponTint function from ESX. (qb-weapons handles it)")
-        end
-    end)
-
-    xPlayer.Functions.AddField("removeWeapon", function(weaponName)
-        xPlayer.Functions.RemoveItem(weaponName, 1, false)
-    end)
-
-    xPlayer.Functions.AddField("removeWeaponComponent", function(weaponName, weaponComponent)
-        xPlayer.Functions.RemoveItem(weaponComponent, 1, false)
-    end)
-
-    xPlayer.Functions.AddField("removeWeaponAmmo", function(weaponName, ammoCount)
-        if QBCore.Shared[weaponName] and QBCore.Shared.Weapons[weaponName].ammotype then 
-            xPlayer.Functions.RemoveItem(QBCore.Shared.Weapons[weaponName].ammotype, ammoCount, false)
-        end 
-    end)
-
-    xPlayer.Functions.AddField("removeWeaponAmmo", function(weaponName, weaponComponent)
-        QBCore.Functions.HasItem(_source, weaponComponent, 1)
-    end)
-
-    xPlayer.Functions.AddField("removeWeaponAmmo", function(weaponName)
-        QBCore.Functions.HasItem(_source, weaponName, 1)
-    end)
-
-    xPlayer.Functions.AddField("hasItem", function(item, metadata)
-        QBCore.Functions.HasItem(_source, item, 1)
-    end)
-
-    xPlayer.Functions.AddField("getWeapon", function(weaponName)
-        if PlayerDebug then 
-            print("QB-Core has no Native equivalent xPlayer.getWeapon function from ESX.")
-        end
-        return nil
-    end)
-
-    xPlayer.Functions.AddField("showNotification", function(msg)
-        QBCore.Functions.Notify(_source, msg)
-    end)
-
-    xPlayer.Functions.AddField("showHelpNotification", function(msg, thisFrame, beep, duration)
-        QBCore.Functions.Notify(_source, msg)
-    end)
-
-    xPlayer.Functions.AddField("triggerEvent", function(eventName, ...)
-        TriggerClientEvent(eventName, _source, ...)
-    end)
-end 
-
-
+    end
+    return str
+end
