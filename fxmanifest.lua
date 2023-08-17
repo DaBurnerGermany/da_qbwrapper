@@ -3,7 +3,7 @@ game 'gta5'
 
 name 'da_qbwrapper'
 author 'DaBurnerGermany'
-version '1.0.0'
+version '1.0.1'
 
 lua54 'yes'
 
@@ -17,8 +17,12 @@ server_scripts {
 }
 
 exports {
-	'getSharedObject'
+	'getSharedObject',
+	'isESX',
+	'isQB'
 }
 server_exports {
-	'getSharedObject'
+	'getSharedObject',
+	'isESX',
+	'isQB'
 }
