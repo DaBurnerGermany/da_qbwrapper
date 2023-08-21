@@ -6,6 +6,12 @@ QBCore = exports['qb-core']:GetCoreObject()
 exports('getSharedObject', function()
     return QBCore
 end)
+exports('isESX', function()
+    return GetResourceState('es_extended') == 'started'
+end)
+exports('isQB', function()
+    return GetResourceState('qb-core') == 'started'
+end)
 
 
 local function EnumerateEntitiesWithinDistance(entities, isPlayerEntities, coords, maxDistance)
