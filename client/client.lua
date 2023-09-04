@@ -59,7 +59,18 @@ end
 
 QBCore.GetPlayerData = function()
     local PlayerData = QBCore.Functions.GetPlayerData()
-    return PlayerData.PlayerData
+
+    local job = {
+        name = PlayerData.job.name,
+        label = PlayerData.job.label,
+        grade = PlayerData.job.grade.level,
+        grade_name = PlayerData.job.grade.name,
+        grade_salary = PlayerData.job.payment,
+        isboss = PlayerData.job.isboss
+    }
+
+    PlayerData.job = job
+    return PlayerData
 end 
 QBCore.SearchInventory = function (items, count)
     if Debug then 
@@ -327,7 +338,9 @@ end)
 
 RegisterNetEvent('esx:showNotification')
 AddEventHandler('esx:showNotification', function(msg, type, length)
-    QBCore.ShowNotification(msg, type, length)
+    if msg ~= nil then
+        QBCore.ShowNotification(msg, type, length)    
+    end
 end)
 
 RegisterNetEvent('esx:showAdvancedNotification')
