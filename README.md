@@ -26,6 +26,7 @@ IF your script uses the users table of ESX make sure that you replace it with th
 Make sure to replace firstname, lastname etc with json.decode function example for esx_documents/server.lua:
 
 Original:
+  ```
   MySQL.Async.fetchAll("SELECT firstname, lastname, dateofbirth FROM users WHERE identifier = @owner", {['@owner'] = xPlayer.identifier}, function(result)
     if result[1] ~= nil then
         cb_data = result[1]
@@ -34,9 +35,11 @@ Original:
         cb(cb_data)
     end
   end)
+```
 
 
 Changed:
+  ```
   MySQL.Async.fetchAll("SELECT charinfo FROM players WHERE citizenid = @owner", {['@owner'] = xPlayer.identifier}, function(result)
 
     if result[1] ~= nil then
@@ -53,6 +56,7 @@ Changed:
       cb(cb_data)
     end
   end)
+```
 
 ## @fxmanifest of your script
 If it uses @es_extended/locale.lua replace it with @da_qbwrapper/locale.lua
